@@ -1,0 +1,44 @@
+@startuml Mie Ayam Wengi 57 UseCase
+left to right direction
+skinparam packageStyle rectangle
+skinparam roundcorner 10
+skinparam theme cerulean-outline
+
+skinparam usecase {
+  BackgroundColor #f8f9fa
+  BorderColor #000000
+  FontSize 13
+  FontName "Helvetica"
+}
+skinparam actorStyle stickman
+
+title **Use Case Diagram - Pemesanan & Pengelolaan Mie Ayam "Wengi 57"**
+
+actor "User" as User
+actor "Admin" as Admin
+
+rectangle "Sistem Informasi Pemesanan Mie Ayam Wengi 57" {
+  
+  usecase "Melihat Daftar Menu" as U1
+  usecase "Melakukan Pembelian Makanan" as U2
+  usecase "Melakukan Pembayaran" as U3
+  usecase "Login" as U4
+  usecase "Logout" as U5
+  usecase "Mengelola Menu Mie Ayam\n(CRUD)" as U6
+  usecase "Mengelola Pesanan Pelanggan\n(Ubah Status/Batal)" as U7
+}
+
+' --- Hubungan aktor ke use case ---
+User --> U1
+User --> U2
+User --> U3
+
+Admin --> U6
+Admin --> U7
+
+' --- Relasi include ---
+U6 ..> U4 : <<include>>
+U7 ..> U4 : <<include>>
+U5 ..> U4 : <<extend>>
+
+@enduml

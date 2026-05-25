@@ -1,0 +1,76 @@
+@startuml Mie Ayam Wengi 57 Class Diagram
+' ============================================================
+' CLASS DIAGRAM: Sistem Pemesanan Mie Ayam Wengi 57
+' ============================================================
+skinparam classAttributeIconSize 0
+skinparam theme cerulean-outline
+skinparam roundcorner 10
+
+title **Class Diagram - Sistem Pemesanan Mie Ayam "Wengi 57"**
+
+class User {
+  - customer_name : String
+  - table_number : String
+  - phone_number : String
+  - notes : String
+  + melihatMenu()
+  + membuatPesanan()
+  + membayar()
+}
+
+class Admin {
+  - id : int
+  - username : String
+  - password : HashString
+  - full_name : String
+  + login()
+  + mengelolaMenu()
+  + mengelolaPesanan()
+}
+
+class MenuMieAyam {
+  - id : int
+  - name : String
+  - description : String
+  - price : Decimal
+  - category : String
+  - image_path : String
+  - is_available : Boolean
+  + tambahMenu()
+  + ubahMenu()
+  + hapusMenu()
+  + ubahStatusKetersediaan()
+}
+
+class Pesanan {
+  - id : int
+  - customer_name : String
+  - table_number : String
+  - total_amount : Decimal
+  - status : Enum("Pending", "Cooking", "Completed", "Cancelled")
+  - payment_method : String
+  - created_at : Timestamp
+  + hitungTotal()
+  + updateStatus(status)
+}
+
+class DetailPesanan {
+  - id : int
+  - order_id : int
+  - menu_id : int
+  - quantity : int
+  - price : Decimal
+}
+
+' ============================================================
+' RELASI ANTAR KELAS
+' ============================================================
+
+User "1" -- "0..*" Pesanan : membuat >
+Admin "1" -- "0..*" MenuMieAyam : mengelola (CRUD) >
+Admin "1" -- "0..*" Pesanan : memproses >
+
+Pesanan "1" *-- "1..*" DetailPesanan : memiliki >
+DetailPesanan "*" -- "1" MenuMieAyam : merujuk >
+
+@enduml
