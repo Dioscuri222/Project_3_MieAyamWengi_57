@@ -1,0 +1,48 @@
+@startuml Mie Ayam Wengi 57 Architecture Diagram
+skinparam theme cerulean-outline
+skinparam roundcorner 10
+
+title **Architecture Diagram (3-Tier) - Mie Ayam "Wengi 57"**
+
+package "Presentation Layer (Client Side - Browser)" {
+  [Customer View\n(index.php + Bootstrap 5)] as CustView
+  [Admin View & Pages\n(admin/dashboard.php, admin/orders.php, admin/menu-manage.php)] as AdminView
+  [Cart Controller\n(cart.js + LocalStorage)] as CartCtrl
+  
+  CustView ..> CartCtrl : interacts with
+}
+
+package "Application Layer (Web Server - Apache & PHP)" {
+  [Admin Login Handler\n(login.php)] as AdminLogin
+  [Session Guard\n(auth_check.php)] as SessionGuard
+  [Order Processor\n(checkout-process.php)] as OrderProc
+  [AJAX Detail Fetcher\n(get-order-details.php)] as DetailsFetcher
+  [Database Connection\n(config/db.php - PDO)] as DBConn
+  
+  AdminView ..> SessionGuard : checks auth
+  AdminView ..> DetailsFetcher : requests details (AJAX)
+}
+
+package "Data Layer (Database Server - MySQL)" {
+  database "mie_ayam_wengi_57" {
+    [admins] as TableAdmins
+    [menus] as TableMenus
+    [orders] as TableOrders
+    [order_items] as TableOrderItems
+  }
+}
+
+' Client to Server connections
+CartCtrl --> OrderProc : AJAX POST Request (JSON)
+CustView --> DBConn : reads menus for display
+AdminLogin --> DBConn : verifies credentials
+AdminView --> DBConn : CRUD & updates status
+DetailsFetcher --> DBConn : retrieves order items
+
+' Server to Database connections
+DBConn --> TableAdmins
+DBConn --> TableMenus
+DBConn --> TableOrders
+DBConn --> TableOrderItems
+
+@enduml

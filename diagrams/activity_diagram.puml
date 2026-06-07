@@ -1,0 +1,98 @@
+@startuml Mie Ayam Wengi 57 Activity Diagram
+skinparam theme cerulean-outline
+skinparam roundcorner 10
+skinparam ActivityBackgroundColor #f8f9fa
+skinparam ActivityBorderColor #000000
+skinparam ActivityFontName "Helvetica"
+skinparam ActivityFontSize 12
+
+title **Activity Diagram - Sistem Pemesanan & Pengelolaan Mie Ayam "Wengi 57"**
+
+|Pelanggan (Customer)|
+start
+:Mengakses Halaman Utama (index.php);
+:Melihat Daftar Menu Kuliner;
+if (Filter Kategori Menu?) then (Ya)
+  :Memilih Kategori Menu\n(Semua, Mie Ayam, Sampingan, Minuman);
+  :Filter Menu Ditampilkan;
+else (Tidak)
+endif
+:Menambahkan Menu ke Keranjang;
+:Membuka Keranjang Belanja (Offcanvas);
+:Mengisi Data Pemesanan\n(Nama, No Meja, No Telepon, Catatan);
+:Memilih Metode Pembayaran\n(Tunai / QRIS);
+:Menekan Tombol "Pesan Sekarang";
+
+|Sistem Web (Frontend/Backend)|
+:Validasi Data Input & Isi Keranjang;
+if (Data Valid?) then (Ya)
+  :Memulai Transaksi Database (Begin Transaction);
+  :Menyimpan Data Pesanan (orders);
+  :Mendapatkan Order ID Baru;
+  while (Ada item di keranjang?) is (Ya)
+    :Memverifikasi Ketersediaan Menu;
+    if (Menu Tersedia?) then (Ya)
+      :Menyimpan Item Pesanan (order_items);
+    else (Tidak)
+      :Batalkan Transaksi (Rollback);
+      :Mengirim Respon Error;
+      |Pelanggan (Customer)|
+      :Menerima Notifikasi Error\n(Menu tidak tersedia/habis);
+      stop
+    endif
+  endwhile (Tidak)
+  |Sistem Web (Frontend/Backend)|
+  :Commit Transaksi Database;
+  :Mengirim Respon Sukses (JSON);
+  :Menampilkan Modal Invoice Digital\n(Informasi Meja, Total, Metode Pembayaran);
+  |Pelanggan (Customer)|
+  :Menerima Invoice Digital & Menunggu Makanan;
+else (Tidak)
+  :Mengirim Respon Gagal;
+  |Pelanggan (Customer)|
+  :Menerima Pesan Validasi Error;
+endif
+stop
+
+|Administrator (Admin)|
+start
+:Mengakses Halaman Login (login.php);
+:Memasukkan Username & Password;
+|Sistem Web (Frontend/Backend)|
+:Verifikasi Kredensial Admin;
+if (Kredensial Valid?) then (Ya)
+  :Membuat Session Admin & Redirect;
+  |Administrator (Admin)|
+  :Masuk ke Dashboard (dashboard.php);
+  :Melihat Statistik Ringkasan\n(Total Pendapatan, Pesanan, Menu);
+  if (Pilih Menu Manajemen?) then (Kelola Pesanan (orders.php))
+    :Melihat List & Filter Pesanan Pelanggan;
+    if (Pilih Detail Pesanan?) then (Ya)
+      :Melihat Detail via AJAX Modal;
+    else (Tidak)
+    endif
+    if (Update Status Pesanan?) then (Ya)
+      :Mengubah Status\n(Pending -> Cooking -> Completed / Cancelled);
+    elseif (Hapus Pesanan?) then (Ya)
+      :Double-Confirm Deletion;
+      :Hapus Pesanan dari Database;
+    else (Tidak)
+    endif
+  else (Kelola Menu (menu-manage.php))
+    :Mengakses Menu Pengelolaan Menu;
+    if (Pilih Tindakan CRUD?) then (Tambah Menu)
+      :Tambah Menu Baru\n(Upload gambar atau URL remote);
+    elseif (Edit Menu)
+      :Edit Informasi Menu;
+    elseif (Toggle Status)
+      :Toggle Ketersediaan (is_available);
+    elseif (Hapus Menu)
+      :Hapus Menu;
+    endif
+  endif
+else (Tidak)
+  |Sistem Web (Frontend/Backend)|
+  :Menampilkan Error Login;
+endif
+stop
+@enduml

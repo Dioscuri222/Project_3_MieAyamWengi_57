@@ -1,0 +1,70 @@
+@startuml Mie Ayam Wengi 57 Sequence Diagram
+skinparam theme cerulean-outline
+skinparam roundcorner 10
+skinparam ParticipantBackgroundColor #f8f9fa
+skinparam ParticipantBorderColor #000000
+
+title **Sequence Diagram - Pemesanan Kuliner Mie Ayam "Wengi 57"**
+
+actor "Pelanggan" as Cust
+boundary "Frontend (index.php)" as Front
+control "JS Controller (cart.js)" as JS
+entity "Backend (checkout-process.php)" as Back
+database "MySQL Database" as DB
+
+Cust -> Front : Mengisi data pemesanan & klik "Pesan Sekarang"
+activate Front
+Front -> JS : triggerCheckout(formData)
+activate JS
+
+JS -> JS : Ambil data keranjang dari LocalStorage
+JS -> Back : POST Request via AJAX (Data Diri, Detail Item, & Total)
+activate Back
+
+Back -> DB : Koneksi via PDO ($pdo)
+activate DB
+DB --> Back : PDO Instance
+deactivate DB
+
+Back -> DB : Begin Transaction
+activate DB
+Back -> DB : INSERT INTO orders (customer_name, table_number, phone_number, total_amount, payment_method, notes)
+DB --> Back : order_id (lastInsertId)
+deactivate DB
+
+loop Untuk setiap item di keranjang
+  Back -> DB : SELECT price, is_available FROM menus WHERE id = menu_id
+  activate DB
+  DB --> Back : data menu (price, is_available)
+  deactivate DB
+  
+  alt Menu tidak ditemukan atau is_available = 0
+    Back -> DB : Rollback Transaction
+    activate DB
+    deactivate DB
+    Back --> JS : JSON Response { success: false, message: "Menu tidak tersedia" }
+    JS --> Front : Tampilkan error toast/alert
+    Front --> Cust : Muncul info kesalahan pesanan
+  else Menu tersedia
+    Back -> DB : INSERT INTO order_items (order_id, menu_id, quantity, price)
+    activate DB
+    DB --> Back : success
+    deactivate DB
+  end
+end
+
+Back -> DB : Commit Transaction
+activate DB
+deactivate DB
+
+Back --> JS : JSON Response { success: true, order_id, customer_name, total_amount, payment_method, table_number }
+deactivate Back
+
+JS -> JS : Clear LocalStorage ('cart')
+JS -> Front : showSuccessModal(orderData)
+deactivate JS
+
+Front --> Cust : Tampilkan Modal Invoice Digital (QRIS / Petunjuk Pembayaran)
+deactivate Front
+
+@enduml

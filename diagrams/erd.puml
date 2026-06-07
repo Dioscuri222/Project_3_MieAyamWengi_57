@@ -1,0 +1,59 @@
+@startuml Mie Ayam Wengi 57 Entity Relationship Diagram
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+skinparam theme cerulean-outline
+skinparam roundcorner 10
+
+title **Entity Relationship Diagram (Database Design) - Mie Ayam "Wengi 57"**
+
+entity "admins" as admins {
+  * id : INT <<PK>> [Auto Increment]
+  --
+  * username : VARCHAR(50) <<Unique>>
+  * password : VARCHAR(255)
+  * full_name : VARCHAR(100)
+  created_at : TIMESTAMP [Default CURRENT_TIMESTAMP]
+}
+
+entity "menus" as menus {
+  * id : INT <<PK>> [Auto Increment]
+  --
+  * name : VARCHAR(100)
+  description : TEXT
+  * price : DECIMAL(10,2)
+  * category : VARCHAR(50)
+  * image_path : VARCHAR(255)
+  is_available : TINYINT(1) [Default 1]
+  created_at : TIMESTAMP [Default CURRENT_TIMESTAMP]
+}
+
+entity "orders" as orders {
+  * id : INT <<PK>> [Auto Increment]
+  --
+  * customer_name : VARCHAR(100)
+  * table_number : VARCHAR(20)
+  * phone_number : VARCHAR(20)
+  notes : TEXT
+  * total_amount : DECIMAL(10,2)
+  status : ENUM('Pending', 'Cooking', 'Completed', 'Cancelled') [Default 'Pending']
+  payment_method : VARCHAR(50) [Default 'Tunai']
+  created_at : TIMESTAMP [Default CURRENT_TIMESTAMP]
+}
+
+entity "order_items" as order_items {
+  * id : INT <<PK>> [Auto Increment]
+  --
+  * order_id : INT <<FK>>
+  * menu_id : INT <<FK>>
+  * quantity : INT
+  * price : DECIMAL(10,2)
+}
+
+' Relationships
+orders ||--|{ order_items : "memiliki"
+menus ||--|{ order_items : "dirujuk oleh"
+
+@enduml
