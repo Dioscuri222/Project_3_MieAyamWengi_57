@@ -1,7 +1,10 @@
 {
   "version": 2,
   "functions": {
-    "index.php": { "runtime": "vercel-php@0.7.3" }
+    "index.php": { "runtime": "vercel-php@0.7.3" },
+    "login.php": { "runtime": "vercel-php@0.7.3" },
+    "logout.php": { "runtime": "vercel-php@0.7.3" },
+    "checkout-process.php": { "runtime": "vercel-php@0.7.3" }
   },
   "routes": [
     { "handle": "filesystem" },
