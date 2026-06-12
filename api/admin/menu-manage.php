@@ -6,10 +6,10 @@ require_once __DIR__ . '/auth_check.php';
 $success_msg = '';
 $error_msg = '';
 
-// Make sure uploads directory exists
-$upload_dir = '../uploads/';
+// Make sure uploads directory exists (use absolute path, suppress warnings in read-only Vercel)
+$upload_dir = __DIR__ . '/../uploads/';
 if (!is_dir($upload_dir)) {
-    mkdir($upload_dir, 0777, true);
+    @mkdir($upload_dir, 0777, true);
 }
 
 // --------------------------------------------------------
@@ -35,19 +35,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $file_name = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "_", basename($_FILES['image_file']['name']));
             $target_file = $upload_dir . $file_name;
             
-            if (move_uploaded_file($file_tmp, $target_file)) {
+            if (@move_uploaded_file($file_tmp, $target_file)) {
                 $image_path = 'uploads/' . $file_name;
+            } else {
+                $error_msg = 'Upload file gagal (Read-only serverless environment). Silakan gunakan kolom URL Gambar Online.';
             }
         }
         
-        // Fallback to image URL if no file is uploaded
-        if (empty($image_path)) {
+        // Fallback to image URL if no file is successfully uploaded
+        if (empty($image_path) && empty($error_msg)) {
             $image_path = trim(filter_input(INPUT_POST, 'image_url', FILTER_DEFAULT));
         }
 
         // Validate
         if (empty($name) || empty($category) || $price === false || empty($image_path)) {
-            $error_msg = 'Nama, Kategori, Harga, dan Gambar wajib diisi.';
+            if (empty($error_msg)) {
+                $error_msg = 'Nama, Kategori, Harga, dan Gambar wajib diisi.';
+            }
         } else {
             try {
                 $stmt = $pdo->prepare("
@@ -87,13 +91,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $file_name = time() . '_' . preg_replace("/[^a-zA-Z0-9.]/", "_", basename($_FILES['image_file']['name']));
             $target_file = $upload_dir . $file_name;
             
-            if (move_uploaded_file($file_tmp, $target_file)) {
+            if (@move_uploaded_file($file_tmp, $target_file)) {
                 $image_path = 'uploads/' . $file_name;
+            } else {
+                $error_msg = 'Upload file gagal (Read-only serverless environment). Silakan gunakan kolom URL Gambar Online.';
             }
         }
         
         // Fallback to input URL if entered, otherwise preserve old image
-        if (empty($image_path)) {
+        if (empty($image_path) && empty($error_msg)) {
             $image_url_input = trim(filter_input(INPUT_POST, 'image_url', FILTER_DEFAULT));
             if (!empty($image_url_input)) {
                 $image_path = $image_url_input;
