@@ -44,6 +44,23 @@ try {
 
     // Create PDO connection with port specified
     $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password, $options);
+
+    // Auto-create sessions table if it doesn't exist to support stateless sessions
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS sessions (
+            id VARCHAR(128) NOT NULL PRIMARY KEY,
+            data TEXT NOT NULL,
+            last_access INT NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    } catch (PDOException $ex) {
+        // Silently ignore if table already exists or creation fails due to permissions
+    }
+
+    // Register database-backed session save handler
+    require_once __DIR__ . '/session_handler.php';
+    $sessionHandler = new DatabaseSessionHandler($pdo);
+    session_set_save_handler($sessionHandler, true);
+
 } catch (PDOException $e) {
     // Elegant warning on connection failure
     die("Koneksi database gagal: " . $e->getMessage());
