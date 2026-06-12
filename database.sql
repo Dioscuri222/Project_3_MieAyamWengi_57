@@ -4,6 +4,7 @@
 CREATE DATABASE IF NOT EXISTS `mie_ayam_wengi_57`;
 USE `mie_ayam_wengi_57`;
 
+--
 -- 1. Table: admins
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,

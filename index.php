@@ -33,7 +33,7 @@ try {
 </head>
 <body>
 
-    <!-- Header / Navbar -->
+    <!-- Header / Navbar --> 
     <nav class="navbar navbar-expand-lg navbar-dark navbar-wengi fixed-top">
         <div class="container">
             <a class="navbar-brand text-gradient" href="index.php">
