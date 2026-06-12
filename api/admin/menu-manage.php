@@ -109,7 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         // Validate
-        if (!$id || empty($name) || empty($category) || $price === false) {
+        if (!empty($error_msg)) {
+            // Do not update database if file upload failed
+        } elseif (!$id || empty($name) || empty($category) || $price === false) {
             $error_msg = 'Data edit menu tidak valid.';
         } else {
             try {
@@ -524,6 +526,13 @@ try {
                     document.getElementById('edit-description').value = description;
                     document.getElementById('edit-old-image').value = image;
                     
+                    // Reset upload input elements to prevent reusing previous input on other items
+                    document.getElementById('edit-image-url').value = '';
+                    const fileInput = document.querySelector('#editMenuModal input[type="file"]');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+
                     // Handle image preview path
                     const previewImg = document.getElementById('edit-image-preview');
                     if (image.startsWith('http')) {
