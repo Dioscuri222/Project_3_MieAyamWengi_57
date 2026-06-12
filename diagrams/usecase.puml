@@ -20,21 +20,31 @@ actor "Admin" as Admin
 rectangle "Sistem Informasi Pemesanan Mie Ayam Wengi 57" {
   
   usecase "Melihat Daftar Menu" as U1
-  usecase "Melakukan Pembelian Makanan" as U2
-  usecase "Melakukan Pembayaran" as U3
-  usecase "Login" as U4
-  usecase "Logout" as U5
-  usecase "Mengelola Menu Mie Ayam\n(CRUD)" as U6
-  usecase "Mengelola Pesanan Pelanggan\n(Ubah Status/Batal)" as U7
+  usecase "Tentang Kami" as U2
+  usecase "Menu Kami" as U4
+  usecase "Melakukan Pembelian Makanan" as U3
+  usecase "Melakukan Pembayaran" as U5_pay
+  usecase "Login" as U5
+  usecase "Logout" as U6
+  usecase "Mengelola Menu Mie Ayam\n(CRUD)" as U7
+  usecase "Mengelola Pesanan Pelanggan\n(Ubah Status/Batal)" as U8
+  usecase "Dashboard" as UDashboard
+  usecase "Riwayat Pesanan" as URiwayat
 }
 
 ' --- Hubungan aktor ke use case ---
 User --> U1
 User --> U2
 User --> U3
+User --> U5_pay
 
 Admin --> U6
 Admin --> U7
+Admin --> U8
+Admin --> U5
+Admin --> UDashboard
+Admin --> URiwayat
+
 
 ' --- Relasi include ---
 U6 ..> U4 : <<include>>
