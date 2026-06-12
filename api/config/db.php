@@ -1,20 +1,31 @@
 <?php
-// config/db.php
+// PDO Database Connection Configuration for Mie Ayam Wengi 57
+// Compatible with local XAMPP MySQL server and TiDB Cloud / Remote MySQL
 
-$host     = 'project-3-mie-ayam-wengi-57.app'; // JANGAN gunakan localhost
-$port     = '3306';                         // Sesuaikan dengan port dari penyedia cloud
-$dbname   = 'nama_database_anda';
-$username = 'user_database_anda';
-$password = 'password_database_anda';
+$host = getenv('DB_HOST') ?: 'localhost';
+$port = getenv('DB_PORT') ?: '3306';
+$dbname = getenv('DB_NAME') ?: 'mie_ayam_wengi_57';
+$username = getenv('DB_USER') ?: 'root';
+$password = getenv('DB_PASSWORD') ?: '';
 
 try {
-    // Tambahkan parameter charset agar koneksi lebih aman
-    $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
-    $pdo = new PDO($dsn, $username, $password);
-    
-    // Atur mode error ke pengecualian
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Default PDO options
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    // TiDB Cloud / Remote MySQL usually require SSL.
+    // If not localhost, enable SSL options to ensure secure connection and compatibility.
+    if ($host !== 'localhost' && $host !== '127.0.0.1') {
+        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+    }
+
+    // Create PDO connection with port specified
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $username, $password, $options);
 } catch (PDOException $e) {
+    // Elegant warning on connection failure
     die("Koneksi database gagal: " . $e->getMessage());
 }
 ?>
