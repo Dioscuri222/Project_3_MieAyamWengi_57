@@ -1,7 +1,7 @@
 <?php
 // Order Details Modal Renderer - Mie Ayam Wengi 57
-require_once '../admin/auth_check.php';
-require_once '../config/db.php';
+require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
 
 $order_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 

@@ -1,7 +1,7 @@
 <?php
 // Admin Menu CRUD Manager - Mie Ayam Wengi 57
-require_once '../admin/auth_check.php';
-require_once '../config/db.php';
+require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
 
 $success_msg = '';
 $error_msg = '';

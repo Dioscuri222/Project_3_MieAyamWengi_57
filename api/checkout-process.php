@@ -1,7 +1,7 @@
 <?php
 // Checkout Order Processor Backend - Mie Ayam Wengi 57
 header('Content-Type: application/json');
-require_once 'config/db.php';
+require_once __DIR__ . '/config/db.php';
 
 // Enable error reporting for safety
 error_reporting(E_ALL);

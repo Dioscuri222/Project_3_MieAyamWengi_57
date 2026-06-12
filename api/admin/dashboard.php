@@ -1,7 +1,7 @@
 <?php
 // Admin Dashboard - Mie Ayam Wengi 57
-require_once '../admin/auth_check.php';
-require_once '../config/db.php';
+require_once __DIR__ . '/auth_check.php';
+require_once __DIR__ . '/../config/db.php';
 
 // Handle order status updates
 $status_success = false;
